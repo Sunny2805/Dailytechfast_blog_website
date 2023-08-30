@@ -1,0 +1,264 @@
+# BEGIN iThemes Security - Do not modify or remove this line
+# iThemes Security Config Details: 2
+	# Ban Hosts - Security > Settings > Banned Users
+	SetEnvIF REMOTE_ADDR "^178\.62\.19\.18$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^178\.62\.19\.18$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^178\.62\.19\.18$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^20\.110\.175\.94$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^20\.110\.175\.94$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^20\.110\.175\.94$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^139\.59\.228\.50$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^139\.59\.228\.50$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^139\.59\.228\.50$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^20\.119\.239\.84$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^20\.119\.239\.84$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^20\.119\.239\.84$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^165\.232\.158\.207$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^165\.232\.158\.207$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^165\.232\.158\.207$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^51\.81\.174\.97$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^51\.81\.174\.97$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^51\.81\.174\.97$" DenyAccess
+
+	SetEnvIF REMOTE_ADDR "^128\.199\.7\.9$" DenyAccess
+	SetEnvIF X-FORWARDED-FOR "^128\.199\.7\.9$" DenyAccess
+	SetEnvIF X-CLUSTER-CLIENT-IP "^128\.199\.7\.9$" DenyAccess
+
+	<IfModule mod_litespeed.c>
+		Order allow,deny
+		Allow from all
+		Deny from env=DenyAccess
+		Deny from 178.62.19.18
+		Deny from 20.110.175.94
+		Deny from 139.59.228.50
+		Deny from 20.119.239.84
+		Deny from 165.232.158.207
+		Deny from 51.81.174.97
+		Deny from 128.199.7.9
+	</IfModule>
+
+	# Protect System Files - Security > Settings > System Tweaks > System Files
+	<files .htaccess>
+		<IfModule mod_litespeed.c>
+			Order allow,deny
+			Deny from all
+		</IfModule>
+	</files>
+	<files readme.html>
+		<IfModule mod_litespeed.c>
+			Order allow,deny
+			Deny from all
+		</IfModule>
+	</files>
+	<files readme.txt>
+		<IfModule mod_litespeed.c>
+			Order allow,deny
+			Deny from all
+		</IfModule>
+	</files>
+	<files wp-config.php>
+		<IfModule mod_litespeed.c>
+			Order allow,deny
+			Deny from all
+		</IfModule>
+	</files>
+
+	# Disable Directory Browsing - Security > Settings > System Tweaks > Directory Browsing
+	Options -Indexes
+
+	<IfModule mod_rewrite.c>
+		RewriteEngine On
+
+		# Protect System Files - Security > Settings > System Tweaks > System Files
+		RewriteRule ^wp-admin/install\.php$ - [F]
+		RewriteRule ^wp-admin/includes/ - [F]
+		RewriteRule !^wp-includes/ - [S=3]
+		RewriteRule ^wp-includes/[^/]+\.php$ - [F]
+		RewriteRule ^wp-includes/js/tinymce/langs/.+\.php - [F]
+		RewriteRule ^wp-includes/theme-compat/ - [F]
+		RewriteCond %{REQUEST_FILENAME} -f
+		RewriteRule (^|.*/)\.(git|svn)/.* - [F]
+
+		# Disable PHP in Uploads - Security > Settings > System Tweaks > PHP in Uploads
+		RewriteRule ^wp\-content/uploads/.*\.(?:php[1-7]?|pht|phtml?|phps)\.?$ - [NC,F]
+
+		# Disable PHP in Plugins - Security > Settings > System Tweaks > PHP in Plugins
+		RewriteRule ^wp\-content/plugins/.*\.(?:php[1-7]?|pht|phtml?|phps)\.?$ - [NC,F]
+
+		# Disable PHP in Themes - Security > Settings > System Tweaks > PHP in Themes
+		RewriteRule ^wp\-content/themes/.*\.(?:php[1-7]?|pht|phtml?|phps)\.?$ - [NC,F]
+	</IfModule>
+# END iThemes Security - Do not modify or remove this line
+
+# BEGIN WebARX
+
+#BASIC ID=1
+RedirectMatch 409 .(htaccess|htpasswd|errordocs|logs)$
+ServerSignature Off
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} !^.*wordpress_logged_in.*$ [NC]
+  RewriteRule ^readme*.*html$ index.php?webarx_fpage=101 [L,QSA]
+  RewriteRule ^license*.*txt$ index.php?webarx_fpage=102 [L,QSA]
+  RewriteRule ^wp-config*.*php$ index.php?webarx_fpage=103 [L,QSA]
+</IfModule>
+
+#BASIC
+
+#BLOCK WP FILE ACCESS  ID=2
+
+# Block the include-only files.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} !^.*wordpress_logged_in.*$ [NC]
+  RewriteRule ^wp-admin/includes/ index.php?webarx_fpage=201 [NC,L]
+  RewriteRule ^wp-includes/[^/]+.php$ index.php?webarx_fpage=202 [NC,L]
+  RewriteRule ^wp-content/uploads/(.*).php$ index.php?webarx_fpage=202 [NC,L]
+  RewriteRule ^wp-includes/js/tinymce/langs/.+.php index.php?webarx_fpage=203 [NC,L]
+  RewriteRule ^wp-includes/theme-compat/ index.php?webarx_fpage=204 [NC,L]
+</IfModule>
+
+#BLOCK WP FILE ACCESS
+
+#BLOCK DEBUG LOG ACCESS
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule ^debug*.*log$ index.php?webarx_fpage=502 [L,QSA]
+</IfModule>
+
+#BLOCK DEBUG LOG ACCESS
+
+#DISABLE INDEX VIEWS
+Options -Indexes
+
+# START Nginx Rewrites for Rank Math Sitemaps
+rewrite ^/sitemap_index.xml$ /index.php?sitemap=1 last;
+rewrite ^/([^/]+?)-sitemap([0-9]+)?.xml$ /index.php?sitemap=$1&sitemap_n=$2 last;
+# END Nginx Rewrites for Rank Math Sitemaps
+
+# START of Rank Math Sitemap Rewrite Rules
+RewriteEngine On
+RewriteBase /
+RewriteRule ^sitemap_index.xml$ /index.php?sitemap=1 [L]
+RewriteRule ^([^/]+?)-sitemap([0-9]+)?.xml$ /index.php?sitemap=$1&sitemap_n=$2 [L]
+RewriteRule ^([a-z]+)?-?sitemap.xsl$ /index.php?xsl=$1 [L]
+# END of Rank Math Sitemap Rewrite Rules
+
+#DISABLE INDEX VIEWS
+
+#FORBID PROXY COMMENT POSTING ID=7
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteCond %{HTTP_COOKIE} !^.*wordpress_logged_in.*$ [NC]
+  RewriteCond %{REQUEST_METHOD} ^POST
+  RewriteCond %{HTTP:VIA} !^$ [OR]
+  RewriteCond %{HTTP:FORWARDED} !^$ [OR]
+  RewriteCond %{HTTP:USERAGENT_VIA} !^$ [OR]
+  RewriteCond %{HTTP:X_FORWARDED_FOR} !^$ [OR]
+  RewriteCond %{HTTP:X_FORWARDED_HOST} !^$ [OR]
+  RewriteCond %{HTTP:PROXY_CONNECTION} !^$ [OR]
+  RewriteCond %{HTTP:XPROXY_CONNECTION} !^$ [OR]
+  RewriteCond %{HTTP:HTTP_PC_REMOTE_ADDR} !^$ [OR]
+  RewriteCond %{HTTP:HTTP_CLIENT_IP} !^$
+  RewriteRule wp-comments-post\.php index.php?webarx_fpage=7 [NC]
+</IfModule>
+
+#FORBID PROXY COMMENT POSTING
+
+#WPSCAN ID=19
+<IfModule mod_rewrite.c>
+  RewriteEngine on
+  RewriteCond %{REMOTE_ADDR} !=18.221.197.243
+  RewriteRule ^(.*)/plugins/(.*)readme\.(txt|html)$ index.php?webarx_fpage=19 [NC,L] 
+</IfModule>
+
+#WPSCAN
+
+# END WebARX
+# BEGIN LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+<IfModule LiteSpeed>
+RewriteEngine on
+CacheLookup on
+RewriteRule .* - [E=Cache-Control:no-autoflush]
+RewriteRule \.litespeed_conf\.dat - [F,L]
+
+### marker CACHE RESOURCE start ###
+RewriteRule wp-content/.*/[^/]*(responsive|css|js|dynamic|loader|fonts)\.php - [E=cache-control:max-age=3600]
+### marker CACHE RESOURCE end ###
+
+### marker FAVICON start ###
+RewriteRule favicon\.ico$ - [E=cache-control:max-age=86400]
+### marker FAVICON end ###
+
+### marker DROPQS start ###
+CacheKeyModify -qs:fbclid
+CacheKeyModify -qs:gclid
+CacheKeyModify -qs:utm*
+CacheKeyModify -qs:_ga
+### marker DROPQS end ###
+
+</IfModule>
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+# END LSCACHE
+# BEGIN NON_LSCACHE
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+### marker BROWSER CACHE start ###
+<IfModule mod_expires.c>
+ExpiresActive on
+ExpiresByType application/pdf A31557600
+ExpiresByType image/x-icon A31557600
+ExpiresByType image/vnd.microsoft.icon A31557600
+ExpiresByType image/svg+xml A31557600
+
+ExpiresByType image/jpg A31557600
+ExpiresByType image/jpeg A31557600
+ExpiresByType image/png A31557600
+ExpiresByType image/gif A31557600
+ExpiresByType image/webp A31557600
+
+ExpiresByType video/ogg A31557600
+ExpiresByType audio/ogg A31557600
+ExpiresByType video/mp4 A31557600
+ExpiresByType video/webm A31557600
+
+ExpiresByType text/css A31557600
+ExpiresByType text/javascript A31557600
+ExpiresByType application/javascript A31557600
+ExpiresByType application/x-javascript A31557600
+
+ExpiresByType application/x-font-ttf A31557600
+ExpiresByType application/x-font-woff A31557600
+ExpiresByType application/font-woff A31557600
+ExpiresByType application/font-woff2 A31557600
+ExpiresByType application/vnd.ms-fontobject A31557600
+ExpiresByType font/ttf A31557600
+ExpiresByType font/otf A31557600
+ExpiresByType font/woff A31557600
+ExpiresByType font/woff2 A31557600
+
+</IfModule>
+### marker BROWSER CACHE end ###
+
+## LITESPEED WP CACHE PLUGIN - Do not edit the contents of this block! ##
+# END NON_LSCACHE
+# BEGIN WordPress
+# The directives (lines) between "BEGIN WordPress" and "END WordPress" are
+# dynamically generated, and should only be modified via WordPress filters.
+# Any changes to the directives between these markers will be overwritten.
+<IfModule mod_rewrite.c>
+RewriteEngine On
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+RewriteBase /
+RewriteRule ^index\.php$ - [L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule . /index.php [L]
+</IfModule>
+
+# END WordPress
